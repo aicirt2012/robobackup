@@ -1,0 +1,29 @@
+name: Reportcard
+on: [push]
+jobs:
+  reportcard:
+    name: Reportcard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: robo-backup
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: robo-backup/go.mod
+      - name: Checkout Repocard
+        uses: actions/checkout@v4
+        with: 
+          repository: gojp/goreportcard
+          path: goreportcard
+      - name: Setup Reportcard
+        run: |- 
+          cd goreportcard
+          make install
+          go install ./cmd/goreportcard-cli
+      - name: Execute Reportcard
+        run: |-
+          cd robo-backup 
+          goreportcard-cli -v -t 100
